@@ -1,0 +1,15 @@
+{
+  "name": "playkart",
+  "version": "1.0.0",
+  "description": "a Youtube clone",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "author": "Harshill Aggarwal",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
