@@ -51,7 +51,7 @@ const userSchema = new Schema(
     }
 )
 
-userSchema.pre("save",async function(next) {
+userSchema.pre("save",async function(next) {  //here arrow function is not used because we dont get access to 'this' through arrow function
     if(this.isModified("password")) {  //to only hash password if it was modified
         this.password = await bcrypt.hash(this.password, 10)
         return next()
@@ -66,7 +66,7 @@ userSchema.methods.isPasswordCorrect = async function(password) {
 userSchema.methods.generateAccessToken = async function() {
     return jwt.sign(
         {
-            _id: this._id,
+            _id: this._id,     //_id is the id of each database given by mongodb on creation
             email: this.email,
             username: this.username,
             fullName: this.fullName

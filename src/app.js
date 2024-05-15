@@ -18,6 +18,6 @@ app.use(cookieParser())
 import userRouter from "./routes/user.route.js"
 
 //api route declaration
-app.use("/api/v1/users", userRouter) //this will go as localhost:8000/api/vi/user/... rest will be from userRouter
+app.use("/api/v1/users", userRouter) //this will go as localhost:8000/api/v1/user/... rest will be from userRouter
 
 export default app
