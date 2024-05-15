@@ -29,8 +29,8 @@ const registerUser = asyncHandler (async (req,res) => {
     // Step-4 : check if files are given or not by user
     // these were uploaded by multer on backend
     // so if path is not present this means user didn't give the files
-    const avatarLocalPath = req.files?.avatar[0]?.path;   
-    const coverImageLocalPath = req.files?.coverImage[0]?.path; 
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;   
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
     if(!avatarLocalPath) throw new ApiError(400, "Avatar is required")
     
