@@ -104,6 +104,7 @@ const loginUser = asyncHandler (async (req, res) => {
 
     // Step-5 : generate tokens
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
+    // console.log("token :", accessToken)
 
     // Step-6 : send response cookie
     const loggedInUser = await User.findById(user._id).select( "-password -refreshToken" ) 
@@ -116,7 +117,17 @@ const loginUser = asyncHandler (async (req, res) => {
     return res.status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200, {user: loggedInUser, accessToken, refreshToken}, "User logged in successfully"))
+    .json(
+        new ApiResponse(
+            200,
+            { 
+                user: loggedInUser,
+                accessToken, 
+                refreshToken
+            },
+            "User logged in successfully"
+        )
+    )
 
 })
 
