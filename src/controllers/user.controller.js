@@ -102,7 +102,7 @@ const loginUser = asyncHandler (async (req, res) => {
 
     if(!isValidPassword) throw new ApiError(401, "Invalid credentials")
 
-    // Step-5 : genrate tokens
+    // Step-5 : generate tokens
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
     // Step-6 : send response cookie
@@ -146,4 +146,4 @@ const logoutUser = asyncHandler (async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully"))
 })
 
-export default { registerUser, loginUser, logoutUser }
+export { registerUser, loginUser, logoutUser }
