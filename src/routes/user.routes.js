@@ -1,10 +1,11 @@
 import { Router } from "express";
-import registerUser from "../controllers/user.controller.js";
+import { registerUser, loginUser, logoutUser } from "../controllers/user.controller.js";
 import upload from "../middlewares/multer.middleware.js"
+import verifyJWT from "../middlewares/auth.middleware.js"
 
 const userRouter = Router()
 
-//route for registering user and sending post request
+// register
 userRouter.route("/register").post(
 
     //multer middleware before the controller works for temp image uploading in backend server
@@ -22,5 +23,11 @@ userRouter.route("/register").post(
     //passing to controller
     registerUser   
 )
+
+// login
+userRouter.route("/login").post(loginUser)
+
+// secured Routes
+userRouter.route("/logout").post(verifyJWT, logoutUser)
 
 export default userRouter
