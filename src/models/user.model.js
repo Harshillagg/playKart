@@ -54,7 +54,7 @@ const userSchema = new Schema(
 userSchema.pre("save",async function(next) {  //here arrow function is not used because we dont get access to 'this' through arrow function
     if(this.isModified("password")) {  //to only hash password if it was modified
         this.password = await bcrypt.hash(this.password, 10)
-        return next()
+        next()
     }
     return next()
 })
