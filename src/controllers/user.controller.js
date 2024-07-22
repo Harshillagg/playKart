@@ -283,6 +283,84 @@ const updateUserCoverImage = asyncHandler (async (req,res) => {
     .json(new ApiResponse(200, user, "Cover Image updated successfully"))
 })
 
+const getUserChannelProfile = asyncHandler (async (req,res) => {
+
+    // get the username form the url (params)
+    const {username} = req.params
+
+    if(!username?.trim())  throw new ApiError(400, "Username is required")
+
+    //aggregation pipeline
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            // saare subscribers ayenge unke channel vaale field se 
+            $lookup: {
+                from: "subscriptions", // model name
+                localfield: "_id", // identifier - can be used to join collections also
+                foreignField: "channel", // field to take
+                as: "subscribers" // alias
+            }
+        },
+        {
+            // and subscribedTo ayenge unke subscriber vaale field se
+            $lookup: {
+                from: "subscriptions", // model name
+                localfield: "_id", // identifier - can be used to join collections also
+                foreignField: "subscriber", // field to take
+                as: "subsribedTo" // alias
+            }
+        },
+        {
+            $addFields: {
+                subscribersCount: {
+                    $size: "$subscribers" 
+                },
+                subscribedToCount: {
+                    $size: "$subsribedTo"
+                },
+                isSubscribed: {
+                    $cond: {
+                        // subscribers.subscriber ka mtlb h ki hm uske subscribers 
+                        // ke lie id match krege loggedin user ki agar logged in user 
+                        // and uske subscribers ke list se user dono match hote h
+                        // to subscribed hai varna nhi 
+                        if:{
+                            $in: [req.user?._id,"$subscribers.subscriber"] 
+                        },
+                        // subscribers hai list of all subscribers to a channel and 
+                        // subscriber means jo user ko subscribe hue h and channel means jo usne subscibe kare h
+                        then:true,
+                        else:false
+                    }
+                }
+            }
+        },
+        {
+            // fields to show in response
+            $project: {
+                fullName : 1,
+                username: 1,
+                subscribersCount: 1,
+                subscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,  
+                coverImage: 1,
+                email: 1
+            }
+        }
+    ])
+
+    if(!channel?.length) throw new ApiError(404, "Channel not found")
+
+    return res.status(200).json(
+        new ApiResponse(200, channel[0], "Channel profile fetched successfully")
+    )
+})
 
 export { 
     registerUser,
@@ -293,5 +371,6 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile
 }
