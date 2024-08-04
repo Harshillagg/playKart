@@ -48,7 +48,7 @@ userRouter.route("/change-password").post(verifyJWT, changeCurrentPasswword);
 userRouter.route("/current-user").get(verifyJWT, getCurrentUser);
 
 //patch is used if only one field is needed to update
-userRouter.route("update-account").patch(verifyJWT, updateAccountDetails);
+userRouter.route("/update-account").patch(verifyJWT, updateAccountDetails);
 
 userRouter
   .route("/avatar")

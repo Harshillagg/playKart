@@ -55,6 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Step-5 : Upload files to cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
+  console.log("response : ", avatar)
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar)
@@ -93,7 +94,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // console.log(req.body)
 
   // Step-2 : check if fields are empty
-  if (!(username && email))
+  if (!(username || email)) // to check atleast one should be non-empty
     throw new ApiError(400, "Username or Email is required");
 
   // Step-3 : validate email or username
@@ -226,10 +227,10 @@ const changeCurrentPasswword = asyncHandler(async (req, res) => {
 
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
 
-  if (!isPasswordCorrect) new ApiError(400, "Invalid Wrong password");
+  if (!isPasswordCorrect) throw new ApiError(400, "Invalid Wrong password");
 
   user.password = newPassword;
-  await user.save({ validateBeforeSave: false });
+  await user.save({ validateBeforeSave: false }); // to prevent mongodb to not validate the document for issues and stuff before save
 
   return res
     .status(200)
@@ -242,7 +243,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
   if (!fullName || !email) throw new ApiError(400, "All fields are required");
 
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
@@ -264,6 +265,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   if (!avatarLocalPath) throw new ApiError(400, "Avatar is required");
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  
 
   if (!avatar.url)
     throw new ApiError(500, "Something went wrong while uploading avatar");
