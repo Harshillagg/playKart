@@ -338,7 +338,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       // saare subscribers ayenge unke channel vaale field se
       $lookup: {
         from: "subscriptions", // model name(that goes into mongodb)
-        localfield: "_id", // name of field in the local model
+        localField: "_id", // name of field in the local model
         foreignField: "channel", // name of localfield in foreign model
         as: "subscribers", // alias of the data retreieved
       },
@@ -347,7 +347,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       // and subscribedTo ayenge unke subscriber vaale field se
       $lookup: {
         from: "subscriptions", // model name
-        localfield: "_id", // identifier - can be used to join collections also
+        localField: "_id", // identifier - can be used to join collections also
         foreignField: "subscriber", // field to take
         as: "subsribedTo", // alias
       },
