@@ -1,6 +1,7 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import uploadOnCloudinary from "../utils/cloudinary.js";
+import {uploadOnCloudinary}  from "../utils/cloudinary.js";
+import {deleteOnCloudinary}  from "../utils/cloudinary.js";
 import ApiError from "../utils/ApiError.js";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
@@ -55,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Step-5 : Upload files to cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  console.log("response : ", avatar)
+  // console.log("response : ", avatar)
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar)
@@ -260,13 +261,22 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
+
+  // to delete old avatar image from cloudinary
+  const oldAvatar = req.user?.avatar;
+
+  const oldAvatarPublicId = oldAvatar.split('/').pop().split('.')[0];
+
+  const oldAvatarDelete = await deleteOnCloudinary(oldAvatarPublicId);
+
+  if(!oldAvatarDelete) throw new ApiError(500, "Something went wrong while deleting old avatar");
+
+  // upload new image to cloudinary now
   const avatarLocalPath = req.file?.path;
 
   if (!avatarLocalPath) throw new ApiError(400, "Avatar is required");
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-
-  
 
   if (!avatar.url)
     throw new ApiError(500, "Something went wrong while uploading avatar");
